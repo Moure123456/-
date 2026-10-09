@@ -1,1 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>النسب الشريف للنبي محمد ﷺ</title>
+  <!-- SDK الخاص بـ Pi Network -->
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <!-- مكتبة الخطوط العربية (Amiri + Cairo) -->
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --gold: #D4AF37;
+      --dark-green: #0d3b2e;
+      --light-bg: #fdfbf7;
+      --text-color: #2c2c2c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Amiri', serif;
+      background-color: #121212;
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
+    }
+
+    .book-container {
+      width: 100%;
+      max-width: 600px;
+      height: 85vh;
+      background: var(--light-bg);
+      border: 12px solid var(--dark-green);
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* الغلاف الإسلامي */
+    .cover-page {
+      background: linear-gradient(135deg, #0d3b2e 0%, #051a14 100%);
+      color: var(--gold);
+      text-align: center;
+      padding: 40px 20px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      border: 3px solid var(--gold);
+      outline: 10px solid var(--dark-green);
+      outline-offset: -15px;
+    }
+
+    .cover-title {
+      font-size: 2.2rem;
+      font-weight: bold;
+      line-height: 1.6;
+      margin-top: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .islamic-pattern {
+      font-size: 3rem;
+      opacity: 0.8;
+    }
+
+    /* أوراق الكتاب */
+    .page {
+      display: none;
+      padding: 30px 25px;
+      height: 100%;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+      background-image: radial-gradient(#e0d6c3 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    .page.active { display: flex; }
+
+    .page-header {
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-title {
+      font-family: 'Cairo', sans-serif;
+      color: var(--dark-green);
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .audio-btn {
+      background: var(--dark-green);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .audio-btn:hover { background: #155543; }
+
+    .page-content {
+      font-size: 1.25rem;
+      line-height: 2.1;
+      color: #1a1a1a;
+      text-align: justify;
+      flex-grow: 1;
+    }
+
+    /* أسفل الصفحة والتحكم */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: #eee8db;
+      border-top: 1px solid var(--gold);
+    }
+
+    .nav-btn {
+      background: var(--dark-green);
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-family: 'Cairo', sans-serif;
+      cursor: pointer;
+    }
+
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .page-num { font-family: 'Cairo', sans-serif; font-size: 0.9rem; color: #555; }
+    
+    .pi-status {
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      font-size: 0.75rem;
+      color: var(--gold);
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+<div class="book-container">
+  <div id="pi-user" class="pi-status"></div>
+
+  <!-- الغلاف -->
+  <div class="page active" id="page-0">
+    <div class="cover-page">
+      <div class="islamic-pattern">﷽</div>
+      <div class="cover-title">
+        النسب الشريف<br>
+        للنبي محمد<br>
+        <span style="font-size: 1.3rem;">صلى الله عليه وعلى آله وسلم</span>
+      </div>
+      <div class="islamic-pattern">۞ ۞ ۞</div>
+      <button class="nav-btn" onclick="nextPage()" style="background: var(--gold); color: #000; font-weight: bold;">تصفح الكتاب 📖</button>
+    </div>
+  </div>
+
+  <!-- الصفحة 1: المقدمة -->
+  <div class="page" id="page-1">
+    <div class="page-header">
+      <span class="page-title">مقدمة شريفة</span>
+      <button class="audio-btn" onclick="readPage(1)">🔊 استمع</button>
+    </div>
+    <div class="page-content" id="text-1">
+      الحمد لله الذي اصطفى سيدنا محمداً صلى الله عليه وسلم من أطهر الأنساب وخيار الأسباب. إن معرفة نسب النبي المصطفى ليست مجرد تاريخ، بل هي توقير وتعظيم لجنابه الشريف. نورد في هذا الكتاب الميسر تبياناً مباركاً لنسبه الطاهر من جهة أبيه وأمه، وأزواجه الذرية الشريفة، وأبرز أصحابه الكرام.
+    </div>
+  </div>
+
+  <!-- الصفحة 2: نسب الأب -->
+  <div class="page" id="page-2">
+    <div class="page-header">
+      <span class="page-title">نسب النبي ﷺ من جهة الأب</span>
+      <button class="audio-btn" onclick="readPage(2)">🔊 استمع</button>
+    </div>
+    <div class="page-content" id="text-2">
+      هو محمد بن عبد الله بن عبد المطلب (واسمه شيبة) بن هاشم (واسمه عمرو) بن عبد مناف (واسمه المغيرة) بن قصي (واسمه زيد) بن كلاب بن مرة بن كعب بن لؤي بن غالب بن فهر (وهو الملقب بقريش) بن مالك بن النضر بن كنانة بن خزيمة بن مدركة بن إلياس بن مضر بن نزار بن معد بن عدنان.
+    </div>
+  </div>
+
+  <!-- الصفحة 3: نسب الأم -->
+  <div class="page" id="page-3">
+    <div class="page-header">
+      <span class="page-title">نسب النبي ﷺ من جهة الأم</span>
+      <button class="audio-btn" onclick="readPage(3)">🔊 استمع</button>
+    </div>
+    <div class="page-content" id="text-3">
+      أمّه هي السيدة آمنة بنت وهب بن عبد مناف بن زهرة بن كلاب بن مرة. ويلتقي نسب أمه بنسب أبيه في الجد الرابع (كلاب بن مرة)، فكان ﷺ من أوسط قومه نسباً وأعظمهم حسباً من الطرفين.
+    </div>
+  </div>
+
+  <!-- الصفحة 4: مشاهير الصحابة -->
+  <div class="page" id="page-4">
+    <div class="page-header">
+      <span class="page-title">عشرون من مشاهير الصحابة</span>
+      <button class="audio-btn" onclick="readPage(4)">🔊 استمع</button>
+    </div>
+    <div class="page-content" id="text-4">
+      من أبرز الصحابة الكرام: أبو بكر الصديق، عمر بن الخطاب، عثمان بن عفان، علي بن أبي طالب، طلحة بن عبيد الله، الزبير بن العوام، عبد الرحمن بن عوف، سعد بن أبي وقاص، سعيد بن زيد، أبو عبيدة بن الجراح، سلمان الفارسي، خالد بن الوليد، عمار بن ياسر، بلال بن رباح، ابن عباس، ابن عمر، أبو هريرة، أنس بن مالك، مصعب بن عمير، وأبو أيوب الأنصاري رضوان الله عليهم.
+    </div>
+  </div>
+
+  <!-- الصفحة 5: أمهات المؤمنين -->
+  <div class="page" id="page-5">
+    <div class="page-header">
+      <span class="page-title">زوجات النبي ﷺ (أمهات المؤمنين)</span>
+      <button class="audio-btn" onclick="readPage(5)">🔊 استمع</button>
+    </div>
+    <div class="page-content" id="text-5">
+      1. خديجة بنت خويلد<br>
+      2. سودة بنت زمعة<br>
+      3. عائشة بنت أبي بكر الصديق<br>
+      4. حفصة بنت عمر بن الخطاب<br>
+      5. زينب بنت خزيمة<br>
+      6. أم سلمة (هند بنت أبي أمية)<br>
+      7. زينب بنت جحش<br>
+      8. جويرية بنت الحارث<br>
+      9. أم حبيبة (رملة بنت أبي سفيان)<br>
+      10. صفية بنت حيي بن أخطب<br>
+      11. ميمونة بنت الحارث<br>
+      (ومارية القبطية رضي الله عنهن جميعاً).
+    </div>
+  </div>
+
+  <!-- الصفحة 6: أبناء وبنات النبي وأزواجهم -->
+  <div class="page" id="page-6">
+    <div class="page-header">
+      <span class="page-title">أبناء وبنات النبي ﷺ وأزواجهم</span>
+      <button class="audio-btn" onclick="readPage(6)">🔊 استمع</button>
+    </div>
+    <div class="page-content" id="text-6">
+      <b>الأبناء الذكور:</b> القاسم، عبد الله، وإبراهيم (وتوفوا صغاراً).<br><br>
+      <b>البنات وأزواجهن:</b><br>
+      • زينب (زوجها أبو العاص بن الربيع).<br>
+      • رقية (تزوجها عثمان بن عفان).<br>
+      • أم كلثوم (تزوجها عثمان بن عفان بعد وفاة رقية).<br>
+      • فاطمة الزهراء (زوجها علي بن أبي طالب).
+    </div>
+  </div>
+
+  <!-- الصفحة 7: الأحفاد وأبناؤهم -->
+  <div class="page" id="page-7">
+    <div class="page-header">
+      <span class="page-title">أبناء البنات والأحفاد</span>
+      <button class="audio-btn" onclick="readPage(7)">🔊 استمع</button>
+    </div>
+    <div class="page-content" id="text-7">
+      <b>من السيدة فاطمة وعلي:</b> الحسن، الحسين، المحسن، زينب، أم كلثوم.<br>
+      <b>من السيدة زينب وأبي العاص:</b> علي، وأمامة (تزوجها علي بن أبي طالب بعد فاطمة).<br>
+      <b>أبناء الأحفاد:</b> زين العابدين بن الحسين، الحسن المثنى بن الحسن، وزيد بن الحسن، ومنهم امتدت السلالة النبوية الشريفة عبر العصور.
+    </div>
+  </div>
+
+  <!-- الصفحة 8: الخاتمة -->
+  <div class="page" id="page-8">
+    <div class="page-header">
+      <span class="page-title">خاتمة مباركة</span>
+      <button class="audio-btn" onclick="readPage(8)">🔊 استمع</button>
+    </div>
+    <div class="page-content" id="text-8">
+      هذا هو نسب نبي الرحمة ﷺ، الشجرة الطيبة التي أصلها ثابت وفرعها في السماء. إن دراسة هذا النسب تعزز محبة النبي وآل بيته وأصحابه الكرام، وتصلنا بسيرة خير البشر. نسأل الله أن يرزقنا شفاعته وأن يحشرنا تحت لوائه يوم القيامة.
+    </div>
+  </div>
+
+  <!-- شريط التحكم بالسحب/التنقل -->
+  <div class="controls" id="controls" style="display:none;">
+    <button class="nav-btn" id="prev-btn" onclick="prevPage()">السابق</button>
+    <span class="page-num" id="page-num">صفحة 1 من 8</span>
+    <button class="nav-btn" id="next-btn" onclick="nextPage()">التالي</button>
+  </div>
+</div>
+
+<script>
+  let currentPage = 0;
+  const totalPages = 8;
+
+  // تهيئة Pi Network SDK
+  const Pi = window.Pi;
+  if (Pi) {
+    Pi.init({ version: "2.0", sandbox: true }); // اجعل sandbox: false عند الرفع النهائي
+    Pi.authenticate(['username'], onIncompletePaymentFound => {})
+      .then(function(auth) {
+        document.getElementById('pi-user').innerText = 'مرحباً: ' + auth.user.username;
+      }).catch(function(error) {
+        console.error("Pi Auth Error:", error);
+      });
+  }
+
+  function updatePage() {
+    document.querySelectorAll('.page').forEach((p, idx) => {
+      p.classList.remove('active');
+      if (idx === currentPage) p.classList.add('active');
+    });
+
+    const controls = document.getElementById('controls');
+    if (currentPage === 0) {
+      controls.style.display = 'none';
+    } else {
+      controls.style.display = 'flex';
+      document.getElementById('page-num').innerText = `صفحة ${currentPage} من ${totalPages}`;
+      document.getElementById('prev-btn').disabled = (currentPage === 1);
+      document.getElementById('next-btn').disabled = (currentPage === totalPages);
+    }
+    // إيقاف أي صوت يعمل عند الانتقال
+    window.speechSynthesis.cancel();
+  }
+
+  function nextPage() {
+    if (currentPage < totalPages) {
+      currentPage++;
+      updatePage();
+    }
+  }
+
+  function prevPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      updatePage();
+    }
+  }
+
+  // خاصية القراءة الصوتية (Text-to-Speech)
+  function readPage(pageNum) {
+    window.speechSynthesis.cancel(); // إيقاف أي صوت سابق
+    const text = document.getElementById(`text-${pageNum}`).innerText;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ar-SA';
+    utterance.rate = 0.85; // سرعة هادئة ومناسبة
+    window.speechSynthesis.speak(utterance);
+  }
+</script>
+
+</body>
+</html>
 
